@@ -1,2 +1,2 @@
 # Rosint
-Python tool for OSINT
+Python🐍 tool for OSINT🕵‍♂️🕵‍♀️
