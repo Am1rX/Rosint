@@ -24,11 +24,11 @@ This project is created by @str4n5er due to university project which is can be u
 
 ### Installation
 
-1. Clone the repo
+1. install required libraries
    ```sh
    pip install -r requirements.txt
    ```
-2. Install NPM packages
+2. runing script
    ```sh
    python rosint.py
    ```
