@@ -33,8 +33,6 @@ This project is created by @str4n5er due to university project which is can be u
    python rosint.py
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- ROADMAP -->
 ## Roadmap
 
