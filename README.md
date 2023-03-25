@@ -58,7 +58,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@str4n5er](https://t.me/str4n5er) - private.amirmahdi@gmail.com
+AmirMahdi - [@str4n5er](https://t.me/str4n5er) - private.amirmahdi@gmail.com
 
 Project Link: [https://github.com/Am1rX/Rosint](https://github.com/Am1rX/Rosint)
 
