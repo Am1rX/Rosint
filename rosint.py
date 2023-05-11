@@ -28,7 +28,7 @@ def ip():
         %s
         '''%(addr,render[0],render[1],render[2],addr,render[5],render[6],render[7]))
     except:
-        print('sorry i dont found anything ! ')
+        print('sorry i dont found anything !! ')
 def findbyemail():
     try:
         h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
