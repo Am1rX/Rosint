@@ -343,6 +343,10 @@ def DL():
     links.append(base_url + "/uploads/")
     links.append(base_url + "/checkout/")
     links.append(base_url + "/phpmyadmin/setup/")
+    links.append(base_url + "/webservice/")
+    links.append(base_url + "/pix/")
+    links.append(base_url + "/backup/")
+    links.append(base_url + "/Content/")
 
     vulnerable_pages = []
     def crawling(link):
