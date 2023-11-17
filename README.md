@@ -38,11 +38,10 @@ This project is created by @str4n5er due to university project which is can be u
 
 - [1] Info IP
 - [2] Info Domain
-- [3] Info Email (find domains with email)
-- [4] Username list Maker
-- [5] Info Username
-- [6] XSS (url base)
-- [7] Directory Listing Finder
+- [3] Username list Maker
+- [4] Info Username
+- [5] XSS (url base)
+- [6] Directory Listing Finder
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
