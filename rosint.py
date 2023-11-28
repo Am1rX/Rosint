@@ -459,7 +459,7 @@ print('''
         .-{   }   }-.          [3] Username list Maker
        ( ( } { } { } )         [4] Info Username
        |`-.._____..-'|      [*] Web Hacking
-       |             ;--.     [5] XSS (url base)
+       |             ;--.     [5] XSS (URL base)
        |   (__)     (__  \\   [6] Directory Listing Finder
        |   (oo)      | )  )  [0] Exit
        |    \/       |/  /
@@ -487,22 +487,18 @@ while True:
         print("\n")
     elif user == '3':
         print("\n")
-        findbyemail()
+        idcreate()
         print("\n")
     elif user == '4':
         print("\n")
-        idcreate()
-        print("\n")
+        socialfinder()
     elif user == '5':
         print("\n")
-        socialfinder()
+        xss()
     elif user == '6':
         print("\n")
-        xss()
-    elif user == '7':
-        print("\n")
         DL()
-    elif user == '8':
+    elif user == '0':
         break
     else:
         print('only use numbers which is provided for you')
