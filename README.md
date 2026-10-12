@@ -1,64 +1,57 @@
+# Rosint
 
-<a name="readme-top"></a>
+An interactive Python prototype that groups public-information lookups and a few web-security checks in one terminal menu. Its six options cover IP and domain lookups, username candidates, public profile checks, a browser-based XSS experiment, and directory-listing heuristics.
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
+> **Current status:** This is a learning project, not a maintained intelligence source or a validated vulnerability scanner. Several lookups scrape third-party websites and can break when those websites change. Verify any result with the original source.
 
-<!-- GETTING STARTED -->
-## Getting Started
+## Menu and data flow
 
-This project is created by @str4n5er due to university project which is can be used for personal use, follow the installation.
+```mermaid
+flowchart LR
+    A["Terminal menu"] --> B["IP / domain lookup<br/>external sites"]
+    A --> C["Username candidates<br/>local generation"]
+    A --> D["Public profile checks<br/>external sites"]
+    A --> E["XSS experiment<br/>headless browser"]
+    A --> F["Directory-listing check<br/>page links + path list"]
+    B --> G["Terminal results"]
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+```
 
-### Installation
+| Option | What the code attempts | Current caveat |
+| --- | --- | --- |
+| 1 | IP lookup via `infobyip.com` | Parses page text with a fixed regular expression. |
+| 2 | Domain lookup via `nslookup.io` | Depends on an undocumented response shape and fixed indexes. |
+| 3 | Generate username variants from a first and last name | Runs locally; input should be nonempty. |
+| 4 | Check public pages on GitHub, Instagram, Reddit, Steam, and Telegram | Page responses can be ambiguous or rate-limited. |
+| 5 | Test a URL with XSS payloads in headless Chrome | **Currently broken:** `chromeService` and `ChromeDriverManager` are referenced but not defined or imported. |
+| 6 | Check links and common paths for directory-listing text | Heuristic only; can miss or misclassify pages. |
 
-1. install required libraries
-   ```sh
-   pip install -r requirements.txt
-   ```
-2. runing script
-   ```sh
-   python rosint.py
-   ```
+## Run locally
 
-<!-- ROADMAP -->
-## Roadmap
+Requires Python, an internet connection for options 1, 2, 4, and 6, and the packages in [`requirements.txt`](requirements.txt):
 
-- [1] Info IP
-- [2] Info Domain
-- [3] Username list Maker
-- [4] Info Username
-- [5] XSS (url base)
-- [6] Directory Listing Finder
+```bash
+python -m pip install -r requirements.txt
+python rosint.py
+```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+The script uses Beautiful Soup's `lxml` parser, which is included in the updated requirements file. Option 5 additionally needs Chrome and a corrected Selenium driver setup before it can run. Choose `0` to exit the menu.
 
-<!-- LICENSE -->
+## Improvement roadmap
+
+1. Replace copied browser headers, cookies, and positional HTML parsing with documented APIs or robust parsers where available.
+2. Fix the Selenium setup and add a small local test page for the XSS option; report “inconclusive” separately from “no alert.”
+3. Add explicit request timeouts, status handling, and tests using saved or mocked responses.
+4. Validate URLs and limit directory checks to a target the operator owns or is authorized to assess.
+5. Emit structured results with source URL and retrieval time so findings can be reviewed later.
+
+## Responsible use
+
+Use the web-security options only against systems you own or are authorized to test. Public-profile matches are leads, not proof that accounts belong to the same person.
+
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-AmirMahdi - [@str4n5er](https://t.me/str4n5er) - private.amirmahdi@gmail.com
-
-Project Link: [https://github.com/Am1rX/Rosint](https://github.com/Am1rX/Rosint)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Released under the repository's [MIT license](LICENSE).
