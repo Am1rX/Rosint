@@ -3,3 +3,4 @@ tqdm
 urllib3
 selenium
 requests
+lxml
